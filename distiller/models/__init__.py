@@ -26,6 +26,7 @@ import torch.nn as nn
 from . import cifar10 as cifar10_models
 from . import mnist as mnist_models
 from . import imagenet as imagenet_extra_models
+from . import my as my_models
 import pretrainedmodels
 
 from distiller.utils import set_model_input_shape_attr, model_setattr
@@ -60,8 +61,12 @@ MNIST_MODEL_NAMES = sorted(name for name in mnist_models.__dict__
                            if name.islower() and not name.startswith("__")
                            and callable(mnist_models.__dict__[name]))
 
+MY_MODEL_NAMES = sorted(name for name in my_models.__dict__
+                           if name.islower() and not name.startswith("__")
+                           and callable(my_models.__dict__[name]))
+
 ALL_MODEL_NAMES = sorted(map(lambda s: s.lower(),
-                            set(IMAGENET_MODEL_NAMES + CIFAR10_MODEL_NAMES + MNIST_MODEL_NAMES)))
+                            set(IMAGENET_MODEL_NAMES + CIFAR10_MODEL_NAMES + MNIST_MODEL_NAMES + MY_MODEL_NAMES)))
 
 
 def patch_torchvision_mobilenet_v2(model):
@@ -119,6 +124,7 @@ def create_model(pretrained, dataset, arch, parallel=True, device_ids=None):
             >=0 - GPU device IDs
     """
     dataset = dataset.lower()
+    # print(str(dataset))
     if dataset not in SUPPORTED_DATASETS:
         raise ValueError('Dataset {} is not supported'.format(dataset))
 
@@ -209,6 +215,14 @@ def _create_mnist_model(arch, pretrained):
         raise ValueError("Model {} is not supported for dataset MNIST".format(arch))
     return model
 
+def _create_my_model(arch, pretrained):
+    if pretrained:
+        raise ValueError("Model {} (My) does not have a pretrained model".format(arch))
+    try:
+        model = my_models.__dict__[arch]()
+    except KeyError:
+        raise ValueError("Model {} is not supported for dataset MNIST".format(arch))
+    return model
 
 def _set_model_input_shape_attr(model, arch, dataset, pretrained, cadene):
     if cadene and pretrained:

@@ -50,17 +50,17 @@ models, or with the provided sample models:
 - ResNet for CIFAR: https://github.com/junyuseu/pytorch-cifar-models
 - MobileNet for ImageNet: https://github.com/marvis/pytorch-mobilenet
 """
-
+import parser
+import os
 import traceback
 import logging
 from functools import partial
+import numpy as np
 import distiller
 from distiller.models import create_model
 import distiller.apputils.image_classifier as classifier
 import distiller.apputils as apputils
-import parser
-import os
-import numpy as np
+
 
 
 # Logger handle
